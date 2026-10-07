@@ -1,0 +1,15 @@
+# OS / editor junk
+Thumbs.db
+.DS_Store
+*.log
+
+# Secrets (none expected in this project, but kept as a safeguard)
+.env
+.env.*
+*.pem
+*.key
+
+# Dependency / build folders (not used by this HTML prototype, kept as a safeguard)
+node_modules/
+dist/
+build/

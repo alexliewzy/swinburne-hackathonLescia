@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GovArchive | Government Policy &amp; Document Portal</title>
+<style>
+  :root{
+    --navy:#0F172A; --slatebg:#F8FAFC; --accent:#2563EB; --accent-hover:#1d4ed8;
+    --emerald:#10B981; --slate100:#F1F5F9; --slate200:#E2E8F0; --slate300:#CBD5E1;
+    --slate400:#94A3B8; --slate500:#64748B; --slate600:#475569; --slate700:#334155;
+    --slate800:#1E293B; --slate900:#0F172A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--slatebg);color:var(--slate800);line-height:1.5}
+  button{font-family:inherit;cursor:pointer}
+  a{color:inherit}
+  mark.kw{background:#FEF08A;color:#78350F;padding:0 2px;border-radius:2px;font-weight:600}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+  .hidden{display:none}
+
+  /* header */
+  header.app{background:var(--navy);color:#fff}
+  .hbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 24px;max-width:1200px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px}
+  .brand h1{font-size:19px;font-weight:700;line-height:1.2}
+  .brand h1 span{color:var(--slate400);font-weight:400}
+  .brand p{font-size:12px;color:var(--slate400)}
+  .hright{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .awsbadge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--slate300)}
+  .awsbadge .dot{color:var(--emerald)}
+  .btn{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;padding:9px 16px;border-radius:10px;border:none}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-hover)}
+  .btn-ghost{background:transparent;color:var(--slate600)}
+  .btn-ghost:hover{background:var(--slate100)}
+  .btn-soft{background:var(--slate100);color:var(--slate700);font-weight:600;padding:9px 14px;border-radius:10px;border:none}
+  .btn-soft:hover{background:var(--slate200)}
+
+  /* search bar */
+  section.search{background:#fff;border-bottom:1px solid var(--slate200)}
+  .searchinner{padding:20px 24px;max-width:1200px;margin:0 auto}
+  .searchfield{position:relative}
+  .searchfield .ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--slate400);font-size:18px}
+  .searchfield input{width:100%;padding:12px 16px 12px 42px;border:1px solid var(--slate300);border-radius:12px;font-size:14px;outline:none}
+  .searchfield input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
+  .filters{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  .filt{display:inline-flex;align-items:center;gap:8px;background:var(--slatebg);border:1px solid var(--slate200);border-radius:10px;padding:8px 12px}
+  .filt label{font-size:12px;color:var(--slate500)}
+  .filt select{font-size:14px;font-weight:600;background:transparent;border:none;outline:none;cursor:pointer;color:var(--slate800)}
+  .chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px}
+  .chips .lbl{font-size:12px;font-weight:600;color:var(--slate500);margin-right:4px}
+  .chip{font-size:12px;font-weight:500;padding:6px 12px;border-radius:999px;background:var(--slate100);border:1px solid var(--slate200);color:var(--slate700)}
+  .chip:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* layout */
+  main.layout{display:flex;gap:24px;max-width:1200px;margin:0 auto;padding:24px;align-items:flex-start}
+  aside.side{width:260px;flex:0 0 auto}
+  .side-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .side-head h2{font-size:12px;font-weight:700;color:var(--slate700);letter-spacing:.05em;text-transform:uppercase}
+  .side-head button{color:var(--accent);background:none;border:none;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+  .folder{width:100%;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;border:1px solid var(--slate200);background:#fff;text-align:left;margin-bottom:8px}
+  .folder:hover{background:var(--slatebg);border-color:var(--slate300)}
+  .folder.active{background:rgba(37,99,235,.08);border-color:var(--accent)}
+  .folder .fi{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 auto}
+  .folder .ft{flex:1;min-width:0}
+  .folder .ft .nm{display:block;font-size:14px;font-weight:600;color:var(--slate800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .folder .ft .ct{display:block;font-size:12px;color:var(--slate400)}
+
+  section.feed{flex:1;min-width:0}
+  .feedcount{font-size:14px;color:var(--slate500);margin-bottom:12px}
+  .card{background:#fff;border:1px solid var(--slate200);border-radius:12px;padding:16px;margin-bottom:12px}
+  .card:hover{box-shadow:0 4px 14px rgba(15,23,42,.08)}
+  .card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid}
+  .badge.solid{color:#fff}
+  .filecode{font-size:12px;color:var(--slate400);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .card h3{margin-top:8px;font-size:16px;font-weight:700;color:var(--slate900)}
+  .snippet{margin-top:4px;font-size:14px;color:var(--slate600)}
+  .meta{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .meta .tags{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--slate500);flex-wrap:wrap}
+  .meta .tags span{display:inline-flex;align-items:center;gap:4px}
+  .openbtn{background:none;border:none;color:var(--accent);font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+  .openbtn:hover{color:var(--accent-hover)}
+  .delbtn{background:none;border:none;color:#DC2626;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
+  .delbtn:hover{color:#991B1B}
+  .empty{background:#fff;border:1px solid var(--slate200);border-radius:12px;padding:48px;text-align:center}
+  .empty .circ{width:56px;height:56px;border-radius:999px;background:var(--slate100);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px}
+  .empty p.big{font-weight:600;color:var(--slate700)}
+  .empty p.sm{font-size:14px;color:var(--slate400);margin-top:4px}
+
+  footer.app{max-width:1200px;margin:24px auto 0;padding:24px;border-top:1px solid var(--slate200);font-size:12px;color:var(--slate400)}
+
+  /* drawer */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40;animation:fade .15s ease-out}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:100%;max-width:560px;background:#fff;box-shadow:-10px 0 40px rgba(0,0,0,.2);z-index:50;display:flex;flex-direction:column;animation:slide .2s ease-out}
+  .drawer .dhead{background:var(--navy);color:#fff;padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .drawer .dhead h2{font-size:16px;font-weight:700;margin-top:4px}
+  .drawer .dmeta{padding:12px 20px;border-bottom:1px solid var(--slate200);display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:12px;color:var(--slate600)}
+  .drawer .dmeta span{display:inline-flex;align-items:center;gap:5px}
+  .tabs{padding:12px 20px 0;display:flex;gap:4px;border-bottom:1px solid var(--slate200)}
+  .tab{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;padding:8px 12px;border:none;background:none;color:var(--slate500);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .dbody{flex:1;overflow-y:auto;padding:16px 20px}
+  .dbody pre{white-space:pre-wrap;font-family:inherit;font-size:14px;color:var(--slate700);line-height:1.6}
+  .cites{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .cite{font-size:12px;background:#EFF6FF;color:var(--accent);border:1px solid #BFDBFE;border-radius:999px;padding:4px 10px}
+  .notice{background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:16px;font-size:14px;color:#92400E}
+  .notice .nt{font-weight:600;display:flex;align-items:center;gap:6px;margin-bottom:4px}
+  .briefnote{font-size:12px;display:inline-flex;align-items:center;gap:6px;background:var(--slate100);color:var(--slate500);padding:5px 10px;border-radius:999px;margin-bottom:12px}
+  .briefcard{border:1px solid var(--slate200);border-radius:10px;overflow:hidden;margin-bottom:12px}
+  .briefcard .bh{padding:8px 12px;font-size:14px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+  .briefcard ul{list-style:none;padding:12px}
+  .briefcard li{font-size:14px;color:var(--slate700);display:flex;gap:8px;margin-bottom:6px}
+  .briefcard li:last-child{margin-bottom:0}
+  .briefcard li .ar{color:var(--slate400);flex:0 0 auto}
+  .dfoot{padding:12px 20px;border-top:1px solid var(--slate200);display:flex;align-items:center;justify-content:space-between}
+  .dfoot .zh{font-size:12px;color:var(--slate400)}
+
+  /* modal */
+  .modalwrap{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;animation:fade .15s ease-out}
+  .modal{position:relative;z-index:51;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:100%;max-width:640px;margin:32px 0}
+  .mhead{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--slate200)}
+  .mhead h2{font-size:16px;font-weight:700;color:var(--slate900);display:inline-flex;align-items:center;gap:8px}
+  .mhead .mi{width:32px;height:32px;border-radius:9px;background:rgba(37,99,235,.1);color:var(--accent);display:flex;align-items:center;justify-content:center}
+  .mbody{padding:20px}
+  .xbtn{background:none;border:none;color:var(--slate400);font-size:20px;line-height:1}
+  .xbtn:hover{color:var(--slate700)}
+  .drop{border:2px dashed var(--slate300);border-radius:12px;padding:24px;text-align:center;background:var(--slatebg)}
+  .drop.over{border-color:var(--accent);background:#EFF6FF}
+  .drop .di{font-size:30px;color:var(--slate400)}
+  .drop p{font-size:14px;color:var(--slate600);margin-top:8px}
+  .drop .browse{display:inline-block;margin-top:8px;font-size:14px;font-weight:600;color:var(--accent)}
+  .filename{margin-top:8px;font-size:14px;font-weight:500;color:var(--slate700);display:inline-flex;align-items:center;gap:6px}
+  .tag-ok{font-size:12px;color:var(--emerald);margin-left:4px}
+  .tag-warn{font-size:12px;color:#D97706;margin-left:4px}
+  .err{font-size:12px;color:#DC2626;margin-top:6px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  .fld label{display:block;font-size:12px;font-weight:600;color:var(--slate600);margin-bottom:4px}
+  .fld .req{color:#EF4444}
+  .field{width:100%;border:1px solid var(--slate300);border-radius:9px;padding:9px 12px;font-size:14px;outline:none;background:#fff;font-family:inherit}
+  .field:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+  .taglist{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .tagpill{font-size:12px;background:#EFF6FF;color:var(--accent);border:1px solid #BFDBFE;border-radius:999px;padding:2px 8px;display:inline-flex;align-items:center;gap:6px}
+  .tagpill button{background:none;border:none;color:var(--accent);font-size:12px}
+  .swatches{display:flex;gap:8px}
+  .swatch{width:28px;height:28px;border-radius:999px;border:2px solid transparent}
+  .swatch.sel{border-color:var(--slate800)}
+  .mactions{margin-top:20px;display:flex;justify-content:flex-end;gap:8px}
+  .toast{position:fixed;bottom:24px;right:24px;z-index:60;animation:fade .15s ease-out}
+  .toast .inner{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.3);border:1px solid rgba(16,185,129,.4)}
+  .toast .ck{color:var(--emerald)}
+
+  #fatal{display:none;max-width:720px;margin:60px auto;padding:24px;border:1px solid #FECACA;background:#FEF2F2;border-radius:12px;color:#991B1B;font-size:14px}
+  #fatal h2{font-size:18px;margin-bottom:8px}
+  #fatal pre{white-space:pre-wrap;background:#fff;border:1px solid #FECACA;border-radius:8px;padding:12px;margin-top:10px;font-size:12px;color:#7F1D1D}
+
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes slide{from{transform:translateX(100%)}to{transform:translateX(0)}}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:var(--slate300);border-radius:6px}
+
+  @media(max-width:860px){
+    main.layout{flex-direction:column}
+    aside.side{width:100%}
+    .drawer{max-width:100%}
+    .grid2{grid-template-columns:1fr}
+    .drawer .dmeta{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <div id="fatal">
+    <h2>Something went wrong loading GovArchive</h2>
+    <p>The app hit an error while starting. The details below help pin it down:</p>
+    <pre id="fatalmsg"></pre>
+    <p style="margin-top:10px">If this mentions a network/CDN load failure, connect to the internet and reload. This prototype loads React from a CDN on first open.</p>
+  </div>
+
+  <!-- React (pinned stable versions, development build for clearer errors) -->
+  <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+
+  <script>
+  // Visible error reporting instead of a blank page.
+  function showFatal(msg){
+    try{
+      document.getElementById('fatalmsg').textContent = String(msg);
+      document.getElementById('fatal').style.display = 'block';
+    }catch(e){}
+  }
+  window.addEventListener('error', function(e){ showFatal((e.error && e.error.stack) || e.message); });
+  window.addEventListener('unhandledrejection', function(e){ showFatal('Promise rejection: ' + (e.reason && (e.reason.stack||e.reason.message) || e.reason)); });
+  </script>
+
+  <!-- App: PLAIN JavaScript, no JSX, no Babel. Nothing to compile in the browser. -->
+  <script>
+  (function(){
+    "use strict";
+    if(!window.React || !window.ReactDOM){
+      showFatal("React did not load. This usually means no internet connection or a blocked CDN (unpkg.com). Connect to wifi and reload.");
+      return;
+    }
+    var React = window.React, ReactDOM = window.ReactDOM;
+    var h = React.createElement;
+    var useState=React.useState, useMemo=React.useMemo, useEffect=React.useEffect,
+        createContext=React.createContext, useContext=React.useContext;
+
+    /* ===================================================================
+       GovArchive — Government Policy & Document Portal (single file)
+       All data is in-memory mock data. No backend, no network at runtime.
+       AWS INTEGRATION SEAM (future work: S3 / Kendra / Bedrock) lives in the
+       Registry store below — addDocument/addCategory/searchDocuments would
+       become REST calls to AWS in production. Here it is all client-side.
+       =================================================================== */
+
+    var SEED_CATEGORIES=[
+      {key:"Policies",label:"Policies",seed:142,accent:"#2563EB",emoji:"\uD83D\uDCDC"},
+      {key:"SOPs",label:"SOPs",seed:380,accent:"#0891B2",emoji:"\uD83D\uDCCB"},
+      {key:"Circulars",label:"Circulars",seed:512,accent:"#7C3AED",emoji:"\uD83D\uDCE2"},
+      {key:"Guidelines",label:"Guidelines",seed:210,accent:"#D97706",emoji:"\uD83D\uDCD8"},
+      {key:"Reports",label:"Reports",seed:195,accent:"#DC2626",emoji:"\uD83D\uDCCA"},
+      {key:"Meeting Minutes",label:"Meeting Minutes",seed:640,accent:"#059669",emoji:"\uD83D\uDC65"}
+    ];
+    var DEPARTMENTS=["SDEC","Treasury","Public Works","HR"];
+    var STATUSES=["Active","Verified","Pending Review","Archived"];
+    function statusColor(s){return s==="Active"?"#10B981":s==="Verified"?"#2563EB":s==="Pending Review"?"#D97706":"#64748B";}
+    var YEARS=["2026","2025","2024"];
+
+    var MOCK_DOCS=[
+      {id:"d1",title:"Emergency Procurement Threshold & Approval Matrix",fileCode:"POL-PROC-2026-01.pdf",
+       category:"Policies",department:"Treasury",effectiveDate:"2026-02-14",year:"2026",status:"Verified",format:"pdf",searchable:true,
+       tags:["emergency procurement limit","procurement","approval matrix","finance"],
+       body:"CLAUSE 1. PURPOSE\nThis policy establishes the Emergency Procurement Limit and the associated approval matrix applicable to all departments during declared emergencies.\n\nCLAUSE 2. EMERGENCY PROCUREMENT LIMIT\n2.1 For a declared emergency, the single-transaction emergency procurement limit is USD 50,000 without prior competitive tender.\n2.2 Any emergency procurement exceeding USD 50,000 requires ratification by the Treasury Approval Board within 72 hours.\n\nCLAUSE 3. APPROVAL MATRIX\n3.1 Up to USD 10,000 - Department Head approval.\n3.2 USD 10,001 to USD 50,000 - Director of Finance approval.\n3.3 Above USD 50,000 - Treasury Approval Board (post-facto ratification permitted in genuine emergencies).\n\nCLAUSE 4. DOCUMENTATION\nAll emergency procurement must be logged in the central registry within five (5) working days, including justification, vendor, and amount.",
+       citations:[{label:"Emergency Procurement Limit",loc:"Page 1, Clause 2.1"},{label:"Approval Matrix",loc:"Page 1, Clause 3.1-3.3"}],
+       brief:{"Mandatory Rules":["Single-transaction emergency limit: USD 50,000 without tender.","Spend above USD 50,000 needs Treasury Board ratification within 72 hours.","Log all emergency procurement in the registry within 5 working days."],
+              "Approval Matrix":["<= USD 10,000 -> Department Head.","USD 10,001-50,000 -> Director of Finance.","> USD 50,000 -> Treasury Approval Board."],
+              "Action Steps":["Confirm an emergency has been formally declared.","Match the amount to the approval tier.","Record justification, vendor, and amount in the registry."]}},
+
+      {id:"d2",title:"Remote Work Allowance & Eligibility Circular",fileCode:"CIR-HR-2026-07.pdf",
+       category:"Circulars",department:"HR",effectiveDate:"2026-01-09",year:"2026",status:"Verified",format:"pdf",searchable:true,
+       tags:["remote work allowance","remote work","HR","allowance","eligibility"],
+       body:"SECTION A. REMOTE WORK ALLOWANCE\nA.1 Eligible employees working remotely for 8 or more days per month qualify for a monthly Remote Work Allowance of USD 120.\nA.2 The allowance covers home internet and electricity contributions and is non-taxable up to the stated cap.\n\nSECTION B. ELIGIBILITY\nB.1 Employees must have completed probation.\nB.2 A signed remote work agreement must be on file with HR.\nB.3 Roles designated as on-site essential are not eligible.\n\nSECTION C. CLAIM PROCESS\nC.1 Submit the monthly remote work log via the HR portal by the 5th of the following month.\nC.2 Line managers approve logs within three (3) working days.",
+       citations:[{label:"Remote Work Allowance",loc:"Page 1, Section A.1"},{label:"Eligibility",loc:"Page 1, Section B.1-B.3"}],
+       brief:{"Mandatory Rules":["8+ remote days/month -> USD 120 monthly allowance.","Signed remote work agreement required on file.","On-site essential roles are excluded."],
+              "Approval Matrix":["Monthly log submitted by employee (by the 5th).","Line manager approves within 3 working days."],
+              "Action Steps":["Check probation + agreement status.","Log remote days in the HR portal.","Submit before the monthly cutoff."]}},
+
+      {id:"d3",title:"SDEC Taskforce - Meeting Minutes (Q1 2026)",fileCode:"MIN-SDEC-2026-03.txt",
+       category:"Meeting Minutes",department:"SDEC",effectiveDate:"2026-03-21",year:"2026",status:"Verified",format:"txt",searchable:true,
+       tags:["sdec taskforce minutes 2026","sdec","taskforce","minutes"],
+       body:"SDEC TASKFORCE MINUTES - QUARTER 1, 2026\nDate: 21 March 2026\nChair: Director, Sustainable Development & Economic Coordination (SDEC)\n\nITEM 1. ATTENDANCE\nQuorum met. Representatives from Treasury, Public Works, and HR present.\n\nITEM 2. DECISIONS\n2.1 Approved the 2026 SDEC taskforce workplan with a focus on infrastructure resilience.\n2.2 Endorsed a joint procurement pilot with Public Works under the emergency procurement framework.\n2.3 Deferred the remote-work expansion proposal pending HR allowance review.\n\nITEM 3. ACTION ITEMS\n3.1 Treasury to confirm budget envelope by 15 April 2026.\n3.2 Public Works to submit resilience project list by 30 April 2026.\n3.3 HR to circulate the updated remote work allowance circular.\n\nITEM 4. NEXT MEETING\nScheduled for 20 June 2026.",
+       citations:[{label:"SDEC Taskforce Minutes 2026",loc:"Page 1, Item 2 (Decisions)"},{label:"Action Items",loc:"Page 1, Item 3"}],
+       brief:{"Mandatory Rules":["2026 SDEC workplan approved (infrastructure resilience focus).","Joint procurement pilot endorsed with Public Works."],
+              "Approval Matrix":["Decisions ratified by SDEC Chair with quorum.","Remote-work expansion deferred to HR review."],
+              "Action Steps":["Treasury: confirm budget envelope by 15 Apr 2026.","Public Works: submit resilience project list by 30 Apr 2026.","HR: circulate updated remote work allowance circular."]}},
+
+      {id:"d4",title:"Standard Operating Procedure - Vendor Onboarding",fileCode:"SOP-PROC-2026-04.pdf",
+       category:"SOPs",department:"Treasury",effectiveDate:"2026-04-02",year:"2026",status:"Active",format:"pdf",searchable:true,
+       tags:["vendor","onboarding","procurement","sop"],
+       body:"SOP: VENDOR ONBOARDING\nSTEP 1. Collect vendor registration documents and tax identification.\nSTEP 2. Verify vendor against the debarment list.\nSTEP 3. Risk-rate the vendor (Low / Medium / High).\nSTEP 4. Director of Finance signs off High-risk vendors.\nSTEP 5. Activate the vendor in the procurement system and notify requesting department.",
+       citations:[{label:"Vendor Onboarding",loc:"Page 1, Step 1-5"}],
+       brief:{"Mandatory Rules":["Debarment-list check is mandatory.","High-risk vendors need Director of Finance sign-off."],"Approval Matrix":["Low/Medium -> Procurement Officer.","High -> Director of Finance."],"Action Steps":["Collect docs.","Verify + risk-rate.","Activate in system."]}},
+
+      {id:"d5",title:"Public Works Road Resilience Guidelines",fileCode:"GDL-PW-2025-11.pdf",
+       category:"Guidelines",department:"Public Works",effectiveDate:"2025-11-18",year:"2025",status:"Verified",format:"pdf",searchable:true,
+       tags:["road","resilience","infrastructure","public works"],
+       body:"GUIDELINES: ROAD RESILIENCE\nThese guidelines define minimum design standards for climate-resilient road infrastructure, including drainage capacity, surface materials, and inspection cycles. Inspection cycles shall not exceed 12 months for primary corridors.",
+       citations:[{label:"Inspection cycles",loc:"Page 1, Para 1"}],
+       brief:{"Mandatory Rules":["Primary corridor inspection cycle <= 12 months."],"Approval Matrix":["Chief Engineer approves deviations."],"Action Steps":["Assess drainage.","Select resilient materials.","Schedule inspections."]}},
+
+      {id:"d6",title:"Annual Treasury Expenditure Report 2025",fileCode:"RPT-TRE-2025-01.pdf",
+       category:"Reports",department:"Treasury",effectiveDate:"2025-12-31",year:"2025",status:"Verified",format:"pdf",searchable:true,
+       tags:["expenditure","budget","report","treasury","annual"],
+       body:"ANNUAL TREASURY EXPENDITURE REPORT 2025\nTotal expenditure increased 4.2% year-on-year. Emergency procurement accounted for 3.1% of total spend. Capital works under Public Works represented the largest category. Recommendations include tighter controls on emergency procurement thresholds.",
+       citations:[{label:"Emergency procurement spend",loc:"Page 1, Summary"}],
+       brief:{"Mandatory Rules":["Report published annually by 31 December."],"Approval Matrix":["Signed off by Director of Finance."],"Action Steps":["Review spend categories.","Act on emergency procurement recommendations."]}},
+
+      {id:"d7",title:"Information Security Policy",fileCode:"POL-IT-2024-09.pdf",
+       category:"Policies",department:"SDEC",effectiveDate:"2024-09-05",year:"2024",status:"Active",format:"pdf",searchable:true,
+       tags:["security","data","policy","access control"],
+       body:"INFORMATION SECURITY POLICY\nAll staff must use multi-factor authentication. Documents classified Restricted must not be stored on personal devices. Access to the registry follows least-privilege principles and is reviewed quarterly.",
+       citations:[{label:"Access control",loc:"Page 1, Para 1"}],
+       brief:{"Mandatory Rules":["MFA required for all staff.","No Restricted docs on personal devices."],"Approval Matrix":["Access granted by System Owner."],"Action Steps":["Enable MFA.","Review access quarterly."]}},
+
+      {id:"d8",title:"SOP - Document Filing & Retention",fileCode:"SOP-REC-2025-02.txt",
+       category:"SOPs",department:"HR",effectiveDate:"2025-05-12",year:"2025",status:"Verified",format:"txt",searchable:true,
+       tags:["filing","retention","records","sop"],
+       body:"SOP: DOCUMENT FILING & RETENTION\nRecords are retained for a minimum of 7 years. Each document is tagged with a category, department, and effective date on filing. Superseded documents are marked Archived but remain searchable.",
+       citations:[{label:"Retention period",loc:"Page 1, Line 1"}],
+       brief:{"Mandatory Rules":["Minimum 7-year retention."],"Approval Matrix":["Records Officer approves disposal."],"Action Steps":["Tag on filing.","Archive superseded docs."]}},
+
+      {id:"d9",title:"Circular - Updated Travel Reimbursement Rates",fileCode:"CIR-TRE-2024-15.pdf",
+       category:"Circulars",department:"Treasury",effectiveDate:"2024-07-01",year:"2024",status:"Active",format:"pdf",searchable:true,
+       tags:["travel","reimbursement","rates","circular"],
+       body:"TRAVEL REIMBURSEMENT CIRCULAR\nPer-diem rates are updated effective 1 July 2024. Domestic travel per-diem is USD 60; international is USD 140. Receipts are required for all claims above USD 25.",
+       citations:[{label:"Per-diem rates",loc:"Page 1, Para 1"}],
+       brief:{"Mandatory Rules":["Receipts required above USD 25."],"Approval Matrix":["Line manager approves claims."],"Action Steps":["Keep receipts.","Submit within 30 days."]}},
+
+      {id:"d10",title:"HR Guidelines - Flexible Working Arrangements",fileCode:"GDL-HR-2026-05.txt",
+       category:"Guidelines",department:"HR",effectiveDate:"2026-02-28",year:"2026",status:"Verified",format:"txt",searchable:true,
+       tags:["flexible working","remote work","hr","guidelines"],
+       body:"FLEXIBLE WORKING GUIDELINES\nThese guidelines complement the Remote Work Allowance circular. Flexible arrangements include staggered hours and compressed weeks. Managers must ensure core collaboration hours between 10:00 and 15:00 are preserved.",
+       citations:[{label:"Core hours",loc:"Page 1, Para 1"}],
+       brief:{"Mandatory Rules":["Core hours 10:00-15:00 preserved."],"Approval Matrix":["Manager approves arrangement."],"Action Steps":["Agree schedule.","Record in HR portal."]}},
+
+      {id:"d11",title:"Public Works Quarterly Progress Report Q4 2025",fileCode:"RPT-PW-2025-04.pdf",
+       category:"Reports",department:"Public Works",effectiveDate:"2025-10-15",year:"2025",status:"Verified",format:"pdf",searchable:true,
+       tags:["progress","report","public works","projects"],
+       body:"PUBLIC WORKS QUARTERLY PROGRESS - Q4 2025\nThree resilience projects on schedule. One drainage upgrade delayed due to permitting. Budget utilisation at 78% of the quarterly envelope.",
+       citations:[{label:"Budget utilisation",loc:"Page 1, Summary"}],
+       brief:{"Mandatory Rules":["Quarterly reporting required."],"Approval Matrix":["Project Director sign-off."],"Action Steps":["Resolve permitting delay.","Report next quarter."]}},
+
+      {id:"d12",title:"SDEC Coordination Committee Minutes (Q4 2025)",fileCode:"MIN-SDEC-2025-08.txt",
+       category:"Meeting Minutes",department:"SDEC",effectiveDate:"2025-12-05",year:"2025",status:"Verified",format:"txt",searchable:true,
+       tags:["sdec","coordination","minutes","committee"],
+       body:"SDEC COORDINATION COMMITTEE MINUTES - Q4 2025\nReviewed inter-agency progress. Agreed to establish the 2026 taskforce. Noted the need to align procurement thresholds across departments.",
+       citations:[{label:"2026 taskforce",loc:"Page 1, Decisions"}],
+       brief:{"Mandatory Rules":["Establish 2026 taskforce."],"Approval Matrix":["Committee Chair ratifies."],"Action Steps":["Draft taskforce terms.","Align thresholds."]}}
+    ];
+
+    var QUICK_CHIPS=["Emergency Procurement Limit","Remote Work Allowance","SDEC Taskforce Minutes 2026"];
+    var ACCENT_SWATCHES=["#2563EB","#10B981","#7C3AED","#DC2626","#D97706","#0891B2"];
+
+    // ---------- search utilities ----------
+    function escapeRe(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}
+    function accentFor(cat){for(var i=0;i<SEED_CATEGORIES.length;i++){if(SEED_CATEGORIES[i].key===cat)return SEED_CATEGORIES[i].accent;}return "#2563EB";}
+
+    function docMatches(doc,q){
+      if(!q)return true;
+      var n=q.toLowerCase();
+      var f=[doc.title,doc.fileCode,doc.department,doc.category,doc.tags.join(" ")];
+      if(doc.searchable)f.push(doc.body);
+      for(var i=0;i<f.length;i++){if((f[i]||"").toLowerCase().indexOf(n)!==-1)return true;}
+      return false;
+    }
+    function buildSnippet(doc,q){
+      if(!q){var base=doc.searchable?doc.body:doc.tags.join(", ");base=base||"";return base.slice(0,160).trim()+(base.length>160?"...":"");}
+      var hs=[];if(doc.searchable)hs.push(doc.body);hs.push(doc.title);hs.push(doc.tags.join(", "));
+      var low=q.toLowerCase();
+      for(var i=0;i<hs.length;i++){var hStr=hs[i];if(!hStr)continue;var idx=hStr.toLowerCase().indexOf(low);
+        if(idx!==-1){var s=Math.max(0,idx-60),e=Math.min(hStr.length,idx+q.length+90);
+          return (s>0?"...":"")+hStr.slice(s,e).trim()+(e<hStr.length?"...":"");}}
+      var fb=(doc.searchable?doc.body:doc.tags.join(", "));return fb.slice(0,150).trim()+"...";
+    }
+    function searchDocuments(reg,opt){
+      var q=(opt.query||"").trim();
+      return reg.filter(function(doc){
+        if(opt.category&&opt.category!=="All Categories"&&doc.category!==opt.category)return false;
+        if(opt.year&&opt.year!=="All Time"&&doc.year!==opt.year)return false;
+        if(opt.department&&opt.department!=="All Departments"&&doc.department!==opt.department)return false;
+        return docMatches(doc,q);
+      });
+    }
+    // renders text with yellow <mark> around query matches
+    function Highlighted(props){
+      var text=String(props.text||""),q=(props.query||"").trim();
+      if(!q)return h("span",null,text);
+      var parts=text.split(new RegExp("("+escapeRe(q)+")","ig"));
+      return h("span",null,parts.map(function(p,i){
+        return p.toLowerCase()===q.toLowerCase()?h("mark",{key:i,className:"kw"},p):h("span",{key:i},p);
+      }));
+    }
+
+    // ---------- tiny UI helpers ----------
+    function Badge(props){
+      var color=props.color||"#2563EB",solid=props.solid;
+      var style=solid?{background:color,color:"#fff",borderColor:color}:{color:color,borderColor:color,background:color+"14"};
+      return h("span",{className:"badge"+(solid?" solid":""),style:style},props.children);
+    }
+
+    // ====================== App ======================
+    function App(){
+      var regState=useState(function(){try{var s=localStorage.getItem("govarchive_registry");return s?JSON.parse(s):MOCK_DOCS;}catch(e){return MOCK_DOCS;}}); var registry=regState[0], setRegistry=regState[1];
+      var catState=useState(function(){try{var s=localStorage.getItem("govarchive_categories");if(s)return JSON.parse(s);}catch(e){}return SEED_CATEGORIES.map(function(c){var o={};for(var k in c)o[k]=c[k];o.count=c.seed;return o;});}); var categories=catState[0], setCategories=catState[1];
+      var categories=catState[0], setCategories=catState[1];
+
+      var qState=useState(""); var query=qState[0], setQuery=qState[1];
+      var draftState=useState(""); var draft=draftState[0], setDraft=draftState[1];
+      var fState=useState({category:"All Categories",year:"All Time",department:"All Departments"});
+      var filters=fState[0], setFilters=fState[1];
+      var selState=useState(null); var selected=selState[0], setSelected=selState[1];
+      var tabState=useState("verified"); var tab=tabState[0], setTab=tabState[1];
+      var upState=useState(false); var uploadOpen=upState[0], setUploadOpen=upState[1];
+      var ccState=useState(false); var catOpen=ccState[0], setCatOpen=ccState[1];
+      var tState=useState(null); var toast=tState[0], setToast=tState[1];
+
+      // debounce search
+      useEffect(function(){var t=setTimeout(function(){setQuery(draft);},300);return function(){clearTimeout(t);};},[draft]);
+      useEffect(function(){try{localStorage.setItem("govarchive_registry",JSON.stringify(registry));}catch(e){}},[registry]);
+      useEffect(function(){try{localStorage.setItem("govarchive_categories",JSON.stringify(categories));}catch(e){}},[categories]);
+
+      function fireToast(msg){setToast(msg);setTimeout(function(){setToast(null);},3000);}
+      function addDocument(doc){
+        setRegistry(function(prev){return [doc].concat(prev);});
+        setCategories(function(prev){return prev.map(function(c){return c.key===doc.category?Object.assign({},c,{count:c.count+1}):c;});});
+      }
+      function deleteDocument(id){
+        setRegistry(function(prev){return prev.filter(function(d){return d.id!==id;});});
+        setSelected(function(s){return (s&&s.id===id)?null:s;});
+        fireToast("Document removed from registry.");
+      }
+      function setDocStatus(id,status){
+        setRegistry(function(prev){return prev.map(function(d){return d.id===id?Object.assign({},d,{status:status}):d;});});
+        setSelected(function(s){return (s&&s.id===id)?Object.assign({},s,{status:status}):s;});
+        fireToast("Status updated to: "+status);
+      }
+
+      function addCategory(cat){
+        setCategories(function(prev){
+          for(var i=0;i<prev.length;i++){if(prev[i].key===cat.key)return prev;}
+          return prev.concat([Object.assign({},cat,{count:0})]);
+        });
+      }
+      function openDoc(doc){setSelected(doc);setTab("verified");}
+
+      var results=useMemo(function(){
+        return searchDocuments(registry,{query:query,category:filters.category,year:filters.year,department:filters.department});
+      },[registry,query,filters]);
+
+      function runChip(chip){setDraft(chip);setQuery(chip);}
+
+      return h("div",null,
+        // ---- header ----
+        h("header",{className:"app"},
+          h("div",{className:"hbar"},
+            h("div",{className:"brand"},
+              h("div",{className:"logo"},"\uD83D\uDDC4\uFE0F"),
+              h("div",null,
+                h("h1",null,"GovArchive ",h("span",null,"| Government Policy & Document Portal")),
+                h("p",null,"Deterministic Document Archiving & Search Portal")
+              )
+            ),
+            h("div",{className:"hright"},
+              h("span",{className:"awsbadge"},h("span",{className:"dot"},"\u25CF")," Secure Portal \u2022 Verified Records"),
+              h("button",{className:"btn btn-primary",onClick:function(){setUploadOpen(true);}},"+ Upload & File New Document")
+            )
+          )
+        ),
+        // ---- search + filters ----
+        h("section",{className:"search"},
+          h("div",{className:"searchinner"},
+            h("div",{className:"searchfield"},
+              h("span",{className:"ic"},"\uD83D\uDD0D"),
+              h("input",{value:draft,maxLength:200,placeholder:"Search keywords, clause numbers, SOP titles, or meeting decisions...",
+                onChange:function(e){setDraft(e.target.value);}})
+            ),
+            h("div",{className:"filters"},
+              Filt("Category",filters.category,["All Categories"].concat(categories.map(function(c){return c.key;})),function(v){setFilters(Object.assign({},filters,{category:v}));}),
+              Filt("Effective Year",filters.year,["All Time"].concat(YEARS),function(v){setFilters(Object.assign({},filters,{year:v}));}),
+              Filt("Department",filters.department,["All Departments"].concat(DEPARTMENTS),function(v){setFilters(Object.assign({},filters,{department:v}));})
+            ),
+            h("div",{className:"chips"},
+              h("span",{className:"lbl"},"Quick search:"),
+              QUICK_CHIPS.map(function(c){return h("button",{key:c,className:"chip",onClick:function(){runChip(c);}},c);})
+            )
+          )
+        ),
+        // ---- layout ----
+        h("main",{className:"layout"},
+          Sidebar(registry,categories,filters.category,function(k){setFilters(Object.assign({},filters,{category:k}));},function(){setCatOpen(true);}),
+          h("section",{className:"feed"},
+            Feed(results,query,openDoc,deleteDocument)
+          )
+        ),
+        h("footer",{className:"app"},"GovArchive prototype \u2022 deterministic client-side search \u2022 in-memory mock data \u2022 AWS S3/Kendra integration is a documented future seam (not live)."),
+        selected?Drawer(selected,query,function(){setSelected(null);},setDocStatus):null,
+        uploadOpen?h(UploadModal,{categories:categories,addDocument:addDocument,fireToast:fireToast,onClose:function(){setUploadOpen(false);}}):null,
+        catOpen?h(CategoryModal,{addCategory:addCategory,fireToast:fireToast,onClose:function(){setCatOpen(false);}}):null,
+        toast?h("div",{className:"toast"},h("div",{className:"inner"},h("span",{className:"ck"},"\u2714"),h("span",null,toast))):null
+      );
+    }
+
+    function Filt(label,value,options,onChange){
+      return h("label",{className:"filt",key:label},
+        h("span",null,label+":"),
+        h("select",{value:value,onChange:function(e){onChange(e.target.value);}},
+          options.map(function(o){return h("option",{key:o,value:o},o);})
+        )
+      );
+    }
+
+    function Sidebar(registry,categories,active,onPick,onCreate){
+      function countFor(key){var n=0;for(var i=0;i<registry.length;i++){if(registry[i].category===key)n++;}return n;}
+      var total=registry.length;
+      return h("aside",{className:"side"},
+        h("div",{className:"side-head"},
+          h("h2",null,"Categories"),
+          h("button",{onClick:onCreate,title:"Create new category folder"},"\uFF0B New")
+        ),
+        Folder("All Categories",total,"#64748B","\uD83D\uDDC2\uFE0F",active==="All Categories",function(){onPick("All Categories");}),
+        categories.map(function(c){
+          return Folder(c.label,countFor(c.key),c.accent,c.emoji||"\uD83D\uDCC1",active===c.key,function(){onPick(c.key);});
+        })
+      );
+    }
+
+    function Folder(label,count,accent,emoji,isActive,onClick){
+      return h("button",{key:label,className:"folder"+(isActive?" active":""),onClick:onClick},
+        h("span",{className:"fi",style:{background:accent+"1A",color:accent}},emoji),
+        h("span",{className:"ft"},
+          h("span",{className:"nm"},label),
+          h("span",{className:"ct"},count.toLocaleString()+" files")
+        )
+      );
+    }
+
+    function Feed(results,query,onOpen,onDelete){
+      if(results.length===0){
+        return h("div",{className:"empty"},
+          h("div",{className:"circ"},"\uD83D\uDD0E"),
+          h("p",{className:"big"},"No documents match your search and filters."),
+          h("p",{className:"sm"},"Try a different keyword, clear a filter, or use a quick-search chip.")
+        );
+      }
+      return h("div",null,
+        h("p",{className:"feedcount"},results.length+" document"+(results.length!==1?"s":"")+" found"),
+        results.map(function(doc){return Card(doc,query,onOpen,onDelete);})
+      );
+    }
+
+    function Card(doc,query,onOpen,onDelete){
+      var accent=accentFor(doc.category);
+      var snippet=buildSnippet(doc,query);
+      return h("div",{className:"card",key:doc.id},
+        h("div",{className:"top"},
+          h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}},
+            h(Badge,{color:accent,solid:true},doc.category),
+            h("span",{className:"filecode"},doc.fileCode)
+          ),
+          h(Badge,{color:statusColor(doc.status)},doc.status)
+        ),
+        h("h3",null,h(Highlighted,{text:doc.title,query:query})),
+        h("p",{className:"snippet"},h(Highlighted,{text:snippet,query:query})),
+        h("div",{className:"meta"},
+          h("div",{className:"tags"},
+            h("span",null,"\uD83D\uDCC5 "+doc.effectiveDate),
+            h("span",null,"\uD83C\uDFE2 "+doc.department),
+            h("span",null,"\uD83D\uDCC1 "+doc.category)
+          ),
+          h("div",{style:{display:"flex",alignItems:"center",gap:"14px"}},
+            h("button",{className:"openbtn",onClick:function(){onOpen(doc);}},"Open Document Preview \u2192"),
+            h("button",{className:"delbtn",title:"Delete document",onClick:function(){if(window.confirm("Delete \""+doc.title+"\" from the registry?"))onDelete(doc.id);}},"\uD83D\uDDD1 Delete")
+          )
+        )
+      );
+    }
+
+
+    function Drawer(doc,query,onClose,onStatus){
+      var accent=accentFor(doc.category);
+      function download(){
+        var text=doc.body||"(No body text available for this document format.)";
+        var blob=new Blob([text],{type:"text/plain"});
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement("a");
+        a.href=url;a.download=(doc.fileCode.replace(/\.[^.]+$/,"")||"document")+".txt";
+        document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+      }
+      return h("div",null,
+        h("div",{className:"overlay",onClick:onClose}),
+        h("div",{className:"drawer"},
+          h("div",{className:"dhead"},
+            h("div",{style:{minWidth:0}},
+              h("div",{style:{display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"}},
+                h(Badge,{color:"#ffffff"},doc.category),
+                h("span",{style:{fontSize:"12px",color:"#CBD5E1",fontFamily:"ui-monospace,monospace"}},doc.fileCode)
+              ),
+              h("h2",null,doc.title)
+            ),
+            h("button",{className:"xbtn",style:{color:"#CBD5E1"},onClick:onClose},"\u2715")
+          ),
+          h("div",{className:"dmeta"},
+            h("span",null,"\uD83D\uDCC5 Effective: "+doc.effectiveDate),
+            h("span",null,"\uD83C\uDFE2 "+doc.department),
+            h("span",null,"Status: ",
+              h("select",{value:doc.status,onChange:function(e){onStatus(doc.id,e.target.value);},
+                style:{fontSize:"12px",fontWeight:600,padding:"2px 6px",borderRadius:"6px",border:"1px solid #CBD5E1",cursor:"pointer"}},
+                STATUSES.map(function(s){return h("option",{key:s,value:s},s);})
+              )
+            ),
+            h("span",null,"\uD83D\uDCC4 "+doc.format.toUpperCase())
+          ),
+          h("div",{className:"dbody"},Verified(doc,query)),
+          h("div",{className:"dfoot"},
+            h("span",{className:"zh"},"Zero-hallucination \u2022 exact source text"),
+            h("button",{className:"btn-soft",onClick:download},"\u2B07 Download")
+          )
+        )
+      );
+    }
+    function Verified(doc,query){
+      if(!doc.searchable){
+        return h("div",{className:"notice"},
+          h("div",{className:"nt"},"\u26A0 Body text unavailable"),
+          "Full-text extraction for "+doc.format.toUpperCase()+" files is not available in this prototype. Only metadata and tags are searchable for this document."
+        );
+      }
+      return h("div",null,
+        (query&&query.trim())?h("div",{className:"cites"},doc.citations.map(function(c,i){
+          return h("span",{key:i,className:"cite"},"\uD83D\uDCCD "+c.label+" - "+c.loc);
+        })):null,
+        h("pre",null,h(Highlighted,{text:doc.body,query:query}))
+      );
+    }
+    function Brief(doc){
+      var brief=doc.brief||{};
+      var titles=["Mandatory Rules","Approval Matrix","Action Steps"];
+      var colors={"Mandatory Rules":"#DC2626","Approval Matrix":"#2563EB","Action Steps":"#10B981"};
+      var ic={"Mandatory Rules":"\u2696","Approval Matrix":"\uD83D\uDD00","Action Steps":"\u2705"};
+      return h("div",null,
+        h("div",{className:"briefnote"},"\u2728 Stretch feature - static mock summary (no AI model called)"),
+        titles.map(function(t){
+          var items=brief[t]||["(No mock content for this document.)"];
+          return h("div",{className:"briefcard",key:t},
+            h("div",{className:"bh",style:{background:colors[t]}},ic[t]+" "+t),
+            h("ul",null,items.map(function(li,i){return h("li",{key:i},h("span",{className:"ar"},"\u203A"),h("span",null,li));}))
+          );
+        })
+      );
+    }
+
+    // ---------- modal shell ----------
+    function Modal(title,icon,onClose,bodyChildren){
+      return h("div",{className:"modalwrap"},
+        h("div",{className:"overlay",onClick:onClose}),
+        h("div",{className:"modal"},
+          h("div",{className:"mhead"},
+            h("h2",null,h("span",{className:"mi"},icon)," "+title),
+            h("button",{className:"xbtn",onClick:onClose},"\u2715")
+          ),
+          h("div",{className:"mbody"},bodyChildren)
+        )
+      );
+    }
+    function FieldRow(label,required,control,error){
+      return h("div",{className:"fld"},
+        h("label",null,label,required?h("span",{className:"req"}," *"):null),
+        control,
+        error?h("div",{className:"err"},error):null
+      );
+    }
+
+    // ---------- Upload modal ----------
+    var ACCEPT=[".txt",".pdf",".doc",".docx"];
+    function extOf(name){var m=(name||"").toLowerCase().match(/\.[^.]+$/);return m?m[0]:"";}
+
+    function UploadModal(props){
+      var categories=props.categories, addDocument=props.addDocument, fireToast=props.fireToast, onClose=props.onClose;
+      var fState=useState(null); var file=fState[0], setFile=fState[1];
+      var txtState=useState(""); var fileText=txtState[0], setFileText=txtState[1];
+      var cState=useState(""); var category=cState[0], setCategory=cState[1];
+      var dState=useState(""); var effectiveDate=dState[0], setEffectiveDate=dState[1];
+      var depState=useState(""); var department=depState[0], setDepartment=depState[1];
+      var tiState=useState(""); var tagInput=tiState[0], setTagInput=tiState[1];
+      var tgState=useState([]); var tags=tgState[0], setTags=tgState[1];
+      var eState=useState({}); var errors=eState[0], setErrors=eState[1];
+      var ovState=useState(false); var over=ovState[0], setOver=ovState[1];
+
+      function handleFile(f){
+        if(!f)return;
+        var ext=extOf(f.name);
+        if(ACCEPT.indexOf(ext)===-1){setErrors(Object.assign({},errors,{file:"Unsupported format. Accepted: .txt, .pdf, .doc, .docx"}));setFile(null);setFileText("");return;}
+        setErrors(Object.assign({},errors,{file:null}));
+        setFile(f);
+        if(ext===".txt"){var r=new FileReader();r.onload=function(ev){setFileText(String(ev.target.result||""));};r.readAsText(f);}
+        else if(ext===".docx"&&window.mammoth){
+          var r2=new FileReader();
+          r2.onload=function(ev){
+            window.mammoth.extractRawText({arrayBuffer:ev.target.result})
+              .then(function(res){setFileText(res.value||"");})
+              .catch(function(){setFileText("");});
+          };
+          r2.readAsArrayBuffer(f);
+        }
+        else{setFileText("");}
+      }
+
+
+      function addTag(){var t=tagInput.trim();if(t&&tags.indexOf(t)===-1)setTags(tags.concat([t]));setTagInput("");}
+      function save(){
+        var errs={};
+        if(!file)errs.file="Please add a file.";
+        if(!category)errs.category="Select a category.";
+        if(!effectiveDate)errs.effectiveDate="Pick an effective date.";
+        if(!department.trim())errs.department="Enter the issuing department.";
+        setErrors(errs);
+        for(var k in errs){if(errs[k])return;}
+        var ext=extOf(file.name),isTxt=ext===".txt",isDocx=ext===".docx",hasText=(isTxt||isDocx)&&fileText.trim().length>0;
+        var ym=effectiveDate.match(/^(\d{4})/);var year=ym?ym[1]:"2026";
+        var doc={id:"u"+Date.now(),title:file.name.replace(/\.[^.]+$/,""),fileCode:file.name,category:category,
+          department:department.trim(),effectiveDate:effectiveDate,year:year,status:"Pending Review",format:ext.replace(".",""),
+
+          searchable:hasText,tags:tags.length?tags:[category.toLowerCase()],body:hasText?fileText:"",
+          citations:hasText?[{label:"Uploaded content",loc:"Page 1"}]:[],
+          brief:{"Mandatory Rules":["(Mock brief - generated on filing.)"],"Approval Matrix":["Filed by: "+department.trim()],"Action Steps":["Review uploaded document."]}};
+        addDocument(doc);
+        fireToast("Document filed to registry: "+file.name);
+        onClose();
+      }
+
+      var dz=h("div",{className:"drop"+(over?" over":""),
+        onDragOver:function(e){e.preventDefault();setOver(true);},
+        onDragLeave:function(){setOver(false);},
+        onDrop:function(e){e.preventDefault();setOver(false);handleFile(e.dataTransfer.files[0]);}},
+        h("div",{className:"di"},"\u2601\uFE0F"),
+        h("p",null,"Drag and drop PDF/Word documents here"),
+        h("p",{style:{fontSize:"12px",color:"#94A3B8"}},"or"),
+        h("label",{className:"browse",style:{cursor:"pointer"}},"Browse files",
+          h("input",{type:"file",style:{display:"none"},accept:".txt,.pdf,.doc,.docx",onChange:function(e){handleFile(e.target.files[0]);}})
+        ),
+        file?h("p",{className:"filename"},"\uD83D\uDCCE "+file.name,
+          extOf(file.name)===".txt"?h("span",{className:"tag-ok"},"(text indexed - searchable)"):h("span",{className:"tag-warn"},"(metadata only - body not searchable)")
+        ):null,
+        errors.file?h("div",{className:"err"},errors.file):null
+      );
+
+      var form=h("div",{className:"grid2"},
+        FieldRow("Filing Category",true,
+          h("select",{className:"field",value:category,onChange:function(e){setCategory(e.target.value);}},
+            [h("option",{key:"_",value:""},"Select category...")].concat(categories.map(function(c){return h("option",{key:c.key,value:c.key},c.label);}))
+          ),errors.category),
+        FieldRow("Effective Date",true,
+          h("input",{className:"field",type:"date",value:effectiveDate,onChange:function(e){setEffectiveDate(e.target.value);}}),errors.effectiveDate),
+        FieldRow("Issuing Department",true,
+          h("input",{className:"field",list:"depl",placeholder:"e.g. Treasury",value:department,onChange:function(e){setDepartment(e.target.value);}}),errors.department),
+        FieldRow("Index Keywords / Tags",false,
+          h("div",null,
+            h("div",{style:{display:"flex",gap:"8px"}},
+              h("input",{className:"field",style:{flex:1},placeholder:"Type a tag, press Enter",value:tagInput,
+                onChange:function(e){setTagInput(e.target.value);},
+                onKeyDown:function(e){if(e.key==="Enter"){e.preventDefault();addTag();}}}),
+              h("button",{className:"btn-soft",onClick:addTag},"Add")
+            ),
+            tags.length?h("div",{className:"taglist"},tags.map(function(t){
+              return h("span",{key:t,className:"tagpill"},t,h("button",{onClick:function(){setTags(tags.filter(function(x){return x!==t;}));}},"\u2715"));
+            })):null
+          ))
+      );
+
+      return Modal("Upload & File New Document","\u2B06",onClose,
+        h("div",null,
+          dz,
+          h("datalist",{id:"depl"},DEPARTMENTS.map(function(d){return h("option",{key:d,value:d});})),
+          form,
+          h("div",{className:"mactions"},
+            h("button",{className:"btn btn-ghost",onClick:onClose},"Cancel"),
+            h("button",{className:"btn btn-primary",onClick:save},"\uD83D\uDCBE Save & File to Registry")
+          )
+        )
+      );
+    }
+
+    // ---------- Create category modal ----------
+    function CategoryModal(props){
+      var addCategory=props.addCategory, fireToast=props.fireToast, onClose=props.onClose;
+      var nState=useState(""); var name=nState[0], setName=nState[1];
+      var dState=useState(""); var desc=dState[0], setDesc=dState[1];
+      var aState=useState(ACCENT_SWATCHES[0]); var accent=aState[0], setAccent=aState[1];
+      var eState=useState(""); var error=eState[0], setError=eState[1];
+      function create(){
+        if(!name.trim()){setError("Category name is required.");return;}
+        addCategory({key:name.trim(),label:name.trim(),accent:accent,emoji:"\uD83D\uDCC1",description:desc.trim()});
+        fireToast("New category folder created: "+name.trim());
+        onClose();
+      }
+      return Modal("Create New Category Folder","\uD83D\uDCC1",onClose,
+        h("div",null,
+          FieldRow("Category Name",true,
+            h("input",{className:"field",placeholder:"e.g. Audit Logs, Inter-Agency MoUs",value:name,onChange:function(e){setName(e.target.value);}}),error),
+          h("div",{style:{marginTop:"16px"}},
+            FieldRow("Description / Scope",false,
+              h("textarea",{className:"field",rows:2,placeholder:"What belongs in this folder?",value:desc,onChange:function(e){setDesc(e.target.value);}}))),
+          h("div",{style:{marginTop:"16px"}},
+            FieldRow("Category Color Accent",false,
+              h("div",{className:"swatches"},ACCENT_SWATCHES.map(function(c){
+                return h("button",{key:c,className:"swatch"+(accent===c?" sel":""),style:{background:c},onClick:function(){setAccent(c);}});
+              })))),
+          h("div",{className:"mactions"},
+            h("button",{className:"btn btn-ghost",onClick:onClose},"Cancel"),
+            h("button",{className:"btn btn-primary",onClick:create},"\uD83D\uDCC1 Create Folder")
+          )
+        )
+      );
+    }
+
+    // ---- mount ----
+    try{
+      var root=ReactDOM.createRoot(document.getElementById("root"));
+      root.render(h(App));
+    }catch(err){
+      showFatal((err&&err.stack)||err);
+    }
+  })();
+  </script>
+</body>
+</html>
